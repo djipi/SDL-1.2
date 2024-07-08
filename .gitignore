@@ -48,6 +48,7 @@ xcuserdata
 .vs
 Debug
 Release
+Release_NoSTDIO
 *.user
 *.ncb
 *.suo
