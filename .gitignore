@@ -33,6 +33,7 @@ build-deps
 *.swp
 *.tmp
 *.rej
+*.bak
 
 # for Xcode
 *.mode1*
