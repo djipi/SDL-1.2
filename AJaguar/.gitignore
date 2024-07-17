@@ -1,0 +1,7 @@
+Assets/
+Debug/
+Release/
+gccfilt.pl
+SDLJag.*
+SDLJag-Test.*
+Backup/
