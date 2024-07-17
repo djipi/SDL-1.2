@@ -367,7 +367,7 @@ int main(int argc, char *argv[])
 	then = SDL_GetTicks();
 	DrawPict(screen, argv[1], speedy, flip, nofade);
 	now = SDL_GetTicks();
-	printf("Time: %d milliseconds\n", now-then);
+	printf("Time: %zu milliseconds\n", now-then);
 #else
 	DrawPict(screen, argv[1], speedy, flip, nofade);
 #endif
