@@ -27,6 +27,10 @@
 #ifndef _SDL_platform_h
 #define _SDL_platform_h
 
+#if defined(__AJAGUAR__) || defined(__JAGUAR__)
+#undef __AJAGUAR__
+#define __AJAGUAR__ 1
+#endif
 #if defined(_AIX)
 #undef __AIX__
 #define __AIX__		1
