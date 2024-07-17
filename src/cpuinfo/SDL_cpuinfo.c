@@ -570,7 +570,11 @@ static __inline__ int CPU_haveNEON(void)
 #endif
 }
 
+#ifdef __GNUC__
+static Uint32 SDL_CPUFeatures __attribute__ ((section (".sdldata"))) = 0xFFFFFFFF;
+#else
 static Uint32 SDL_CPUFeatures = 0xFFFFFFFF;
+#endif
 
 static Uint32 SDL_GetCPUFeatures(void)
 {

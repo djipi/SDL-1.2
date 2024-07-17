@@ -35,7 +35,11 @@
 #include "../events/SDL_events_c.h"
 
 /* These are static for our cursor handling code */
+#ifdef __GCC__
+volatile int SDL_cursorstate __attribute__ ((section (".sdldata"))) = CURSOR_VISIBLE;
+#else
 volatile int SDL_cursorstate = CURSOR_VISIBLE;
+#endif
 SDL_Cursor *SDL_cursor = NULL;
 static SDL_Cursor *SDL_defcursor = NULL;
 SDL_mutex *SDL_cursorlock = NULL;
