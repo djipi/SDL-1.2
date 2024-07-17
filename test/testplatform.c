@@ -189,6 +189,8 @@ int main(int argc, char *argv[])
 			"RISC OS"
 #elif __SOLARIS__
 			"Solaris"
+#elif __AJAGUAR__
+			"Atari Jaguar"
 #elif __WIN32__
 #ifdef _WIN32_WCE
 			"Windows CE"
