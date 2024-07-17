@@ -167,6 +167,9 @@ extern AudioBootStrap DISKAUD_bootstrap;
 #if SDL_AUDIO_DRIVER_DUMMY
 extern AudioBootStrap DUMMYAUD_bootstrap;
 #endif
+#if SDL_AUDIO_DRIVER_AJAGUAR
+extern AudioBootStrap AJAGUARAUD_bootstrap;
+#endif
 #if SDL_AUDIO_DRIVER_DC
 extern AudioBootStrap DCAUD_bootstrap;
 #endif
