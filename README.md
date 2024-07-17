@@ -24,7 +24,7 @@ and 2D framebuffer across multiple platforms.
 
 The current version supports Linux, Windows CE/95/98/ME/XP/Vista, BeOS,
 MacOS Classic, Mac OS X, FreeBSD, NetBSD, OpenBSD, BSD/OS, Solaris, IRIX,
-and QNX.  The code contains support for Dreamcast, Atari, AIX, OSF/Tru64,
+and QNX.  The code contains support for Dreamcast, Atari Jaguar, Atari, AIX, OSF/Tru64,
 RISC OS, SymbianOS, Nintendo DS, and OS/2, but these are not officially
 supported.
 
