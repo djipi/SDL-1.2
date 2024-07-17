@@ -31,6 +31,8 @@
 #include "beos/SDL_systhread_c.h"
 #elif SDL_THREAD_DC
 #include "dc/SDL_systhread_c.h"
+#elif SDL_THREAD_AJAGUAR
+#include "jaguar/SDL_systhread_c.h"
 #elif SDL_THREAD_OS2
 #include "os2/SDL_systhread_c.h"
 #elif SDL_THREAD_PTH
