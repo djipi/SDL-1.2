@@ -14,19 +14,6 @@
 	.data
 
 
-;***********************
-;* Game files directory
-;***********************
-;
-	.even
-OSJAG_Directory:
-OSJAG_Directory_Deb:
-	.long	OSJAG_Directory_File0_Info
-	.long	OSJAG_Directory_File1_Info
-	.long	OSJAG_Directory_File2_Info
-OSJAG_Directory_End:
-	.long	0
-;
 ;**************************
 ;* Game files descriptions
 ;**************************
@@ -63,15 +50,28 @@ OSJAG_Directory_File2_File:
 OSJAG_Directory_File2_Deb:
 ;	.incbin	""
 OSJAG_Directory_File2_End:
+;
+;***********************
+;* Game files directory
+;***********************
+;
+	.even
+OSJAG_Directory:
+OSJAG_Directory_Deb:
+	.long	OSJAG_Directory_File0_Info
+	.long	OSJAG_Directory_File1_Info
+	.long	OSJAG_Directory_File2_Info
+OSJAG_Directory_End:
+	.long	0
 
 
 	.bss
 
 ; Seek positions
 	.even
-OSJAG_SeekPosition:
-	.size	OSJAG_SeekPosition, (OSJAG_Directory_End-OSJAG_Directory_Deb)
+;OSJAG_SeekPosition:
+	.comm	OSJAG_SeekPosition, 12	;(OSJAG_Directory_End-OSJAG_Directory_Deb)
 ; Buffer pointers
 	.even
-OSJAG_PtrBuffer:
-	.size	OSJAG_PtrBuffer, (OSJAG_Directory_End-OSJAG_Directory_Deb)
+;OSJAG_PtrBuffer:
+	.comm	OSJAG_PtrBuffer, 12	;(OSJAG_Directory_End-OSJAG_Directory_Deb)
