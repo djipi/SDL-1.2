@@ -4,7 +4,7 @@
 // Arguments list
 char* NXArgv[] = {
 	(char*)"testtimer.elf",
-	(char*)"100"	//	desired delay?
+	(char*)"100"	//	desired delay (in ms?)
 };
 
 // Number of argument
