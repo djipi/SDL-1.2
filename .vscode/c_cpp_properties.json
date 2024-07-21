@@ -1,0 +1,28 @@
+{
+    "env": {
+        "myIncludePath": [
+            "${workspaceFolder}",
+            "${workspaceFolder}/src",
+            "${workspaceFolder}/include",
+            "${workspaceFolder}/AJaguar/src/Runtime",
+            "C:/GNU/m68k-elf-gcc-4.9.3/m68k-elf/include"
+        ],
+        "myDefines": [
+            "__AJAGUAR__"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "Atari Jaguar",
+            "defines": [
+                "${myDefines}"
+            ],
+            "includePath": ["${myIncludePath}"],
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.16.27023\\bin\\Hostx64\\x64\\cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

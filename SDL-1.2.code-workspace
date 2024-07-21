@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"[m68k]": {
+			"editor.rulers": []
+		},
+		"files.associations": {
+			"sdl_config.h": "c",
+			"sdl_platform.h": "c",
+			"sdl_config_ajaguar.h": "c",
+			"string.h": "c",
+			"typeinfo": "c",
+			"joypad.h": "c",
+			"sdl_joystick.h": "c"
+		}
+	}
+}
