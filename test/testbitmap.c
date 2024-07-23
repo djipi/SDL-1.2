@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 	SDL_Surface *screen;
 	SDL_Surface *bitmap;
 	Uint8  video_bpp;
+	Uint16 video_width, video_height;
 	Uint32 videoflags;
 	Uint8 *buffer;
 	int i, k, done;
@@ -72,11 +73,21 @@ int main(int argc, char *argv[])
 	}
 
 	video_bpp = 0;
+	video_width = 640;
+	video_height = 480;
 	videoflags = SDL_SWSURFACE;
 	while ( argc > 1 ) {
 		--argc;
 		if ( strcmp(argv[argc-1], "-bpp") == 0 ) {
 			video_bpp = atoi(argv[argc]);
+			--argc;
+		} else
+		if ( strcmp(argv[argc-1], "-width") == 0 ) {
+			video_width = atoi(argv[argc]);
+			--argc;
+		} else
+		if ( strcmp(argv[argc-1], "-height") == 0 ) {
+			video_height = atoi(argv[argc]);
 			--argc;
 		} else
 		if ( strcmp(argv[argc], "-warp") == 0 ) {
@@ -89,16 +100,16 @@ int main(int argc, char *argv[])
 			videoflags |= SDL_FULLSCREEN;
 		} else {
 			fprintf(stderr,
-			"Usage: %s [-bpp N] [-warp] [-hw] [-fullscreen]\n",
+			"Usage: %s [-width N] [-height N] [-bpp N] [-warp] [-hw] [-fullscreen]\n",
 								argv[0]);
 			quit(1);
 		}
 	}
 
 	/* Set 640x480 video mode */
-	if ( (screen=SDL_SetVideoMode(640,480,video_bpp,videoflags)) == NULL ) {
-		fprintf(stderr, "Couldn't set 640x480x%d video mode: %s\n",
-						video_bpp, SDL_GetError());
+	if ( (screen=SDL_SetVideoMode(video_width,video_height,video_bpp,videoflags)) == NULL ) {
+		fprintf(stderr, "Couldn't set %dx%dx%d video mode: %s\n",
+						video_width, video_height, video_bpp, SDL_GetError());
 		quit(2);
 	}
 
