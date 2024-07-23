@@ -18,9 +18,9 @@ environ_VMA:
 	.long	0
 
 	.even
-environ1a:	.string	"SDL_AUDIODRIVER=AJaguar_AUDIO"
+environ1a:	.string	"SDL_AUDIODRIVER=ajaguar"
 	.even
-environ2a:	.string	"SDL_VIDEODRIVER=AJaguar_VIDEO"
+environ2a:	.string	"SDL_VIDEODRIVER=ajaguar"
 
 ;	.bss
 ;	
