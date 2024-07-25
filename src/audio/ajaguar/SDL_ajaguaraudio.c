@@ -34,7 +34,7 @@
 #include "SDL_ajaguaraudio.h"
 
 /* The tag name used by DUMMY audio */
-#define AJAGUARAUD_DRIVER_NAME         "AJaguar_AUDIO"
+#define AJAGUARAUD_DRIVER_NAME         "ajaguar"
 
 /* Audio driver functions */
 static int AJAGUARAUD_OpenAudio(_THIS, SDL_AudioSpec *spec);
