@@ -2,7 +2,6 @@ The SDL port to the Atari Jaguar
 
 todo:
 add console specific features and optimizations
-gamepad support
 mouse/keyboard emulation support
 audio support
 CD support
