@@ -24,6 +24,7 @@ OSJAG_Directory_Deb:
 	.long	OSJAG_Directory_File0_Info
 	.long	OSJAG_Directory_File1_Info
 	.long	OSJAG_Directory_File2_Info
+	.long	OSJAG_Directory_File3_Info
 OSJAG_Directory_End:
 	.long	0
 ;
@@ -63,15 +64,24 @@ OSJAG_Directory_File2_File:
 OSJAG_Directory_File2_Deb:
 ;	.incbin	""
 OSJAG_Directory_File2_End:
+;
+	.even
+OSJAG_Directory_File3_Info:
+	.long	OSJAG_Directory_File3_File
+	.long	OSJAG_Directory_File3_End-OSJAG_Directory_File3_Deb
+	.string	"sample.bmp"
+	.even
+OSJAG_Directory_File3_File:
+OSJAG_Directory_File3_Deb:
+	.incbin	"../../test/sample.bmp"
+OSJAG_Directory_File3_End:
 
 
 	.bss
 
 ; Seek positions
 	.even
-;OSJAG_SeekPosition:
-	.comm	OSJAG_SeekPosition, 12	;(OSJAG_Directory_End-OSJAG_Directory_Deb)
+OSJAG_SeekPosition:	.space	(OSJAG_Directory_End-OSJAG_Directory_Deb)
 ; Buffer pointers
 	.even
-;OSJAG_PtrBuffer:
-	.comm	OSJAG_PtrBuffer, 12	;(OSJAG_Directory_End-OSJAG_Directory_Deb)
+OSJAG_PtrBuffer:	.space	(OSJAG_Directory_End-OSJAG_Directory_Deb)

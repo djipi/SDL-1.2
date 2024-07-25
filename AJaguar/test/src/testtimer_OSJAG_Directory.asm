@@ -69,9 +69,7 @@ OSJAG_Directory_File2_End:
 
 ; Seek positions
 	.even
-;OSJAG_SeekPosition:
-	.comm	OSJAG_SeekPosition, 12	;(OSJAG_Directory_End-OSJAG_Directory_Deb)
+OSJAG_SeekPosition:	.space	(OSJAG_Directory_End-OSJAG_Directory_Deb)
 ; Buffer pointers
 	.even
-;OSJAG_PtrBuffer:
-	.comm	OSJAG_PtrBuffer, 12	;(OSJAG_Directory_End-OSJAG_Directory_Deb)
+OSJAG_PtrBuffer:	.space	(OSJAG_Directory_End-OSJAG_Directory_Deb)
