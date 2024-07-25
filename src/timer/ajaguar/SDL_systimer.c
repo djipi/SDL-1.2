@@ -25,29 +25,39 @@
 
 #include "SDL_timer.h"
 #include "../SDL_timer_c.h"
-
-extern Uint32 ajag_mstimer;
+#include "IRQHandler.h"
 
 void SDL_StartTicks(void)
 {
+#if 0
 	SDL_Unsupported();
+#else
+	init_interrupts();
+#endif
 }
 
 // Get the number of milliseconds since the SDL library initialization
 Uint32 SDL_GetTicks (void)
 {
-	return ajag_mstimer;
 #if 0
 	SDL_Unsupported();
 	return 0;
+#else
+	return ajag_mstimer;
 #endif
 }
 
 void SDL_Delay (Uint32 ms)
 {
+#if 0
 	SDL_Unsupported();
+#else
+	ms += ajag_mstimer;
+	while (ajag_mstimer < ms);
+#endif
 }
 
+#if 0
 #include "SDL_thread.h"
 
 /* Data to handle a single periodic alarm */
@@ -64,24 +74,32 @@ static int RunTimer(void *unused)
 	}
 	return(0);
 }
+#endif
 
 /* This is only called if the event thread is not running */
 int SDL_SYS_TimerInit(void)
 {
+#if 0
 	timer_alive = 1;
 	timer = SDL_CreateThread(RunTimer, NULL);
 	if ( timer == NULL )
 		return(-1);
 	return(SDL_SetTimerThreaded(1));
+#else
+	// return (ajag_mstimer = 0);
+	return 0;
+#endif
 }
 
 void SDL_SYS_TimerQuit(void)
 {
+#if 0
 	timer_alive = 0;
 	if ( timer ) {
 		SDL_WaitThread(timer, NULL);
 		timer = NULL;
 	}
+#endif
 }
 
 int SDL_SYS_StartTimer(void)
