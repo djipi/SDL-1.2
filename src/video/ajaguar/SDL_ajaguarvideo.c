@@ -45,10 +45,9 @@
 #include "SDL_ajaguarvideo.h"
 #include "SDL_ajaguarevents_c.h"
 #include "SDL_ajaguarmouse_c.h"
+#include "video.h"
 
-extern void ajag_setvideo(void);
-
-#define AJAGUARVID_DRIVER_NAME "AJaguar_VIDEO"
+#define AJAGUARVID_DRIVER_NAME "ajaguar"
 
 /* Initialization/Query functions */
 static int AJAGUAR_VideoInit(_THIS, SDL_PixelFormat *vformat);
@@ -112,15 +111,15 @@ static SDL_VideoDevice *AJAGUAR_CreateDevice(int devindex)
 	device->SetColors = AJAGUAR_SetColors;
 	device->UpdateRects = AJAGUAR_UpdateRects;
 	device->VideoQuit = AJAGUAR_VideoQuit;
-	device->AllocHWSurface = AJAGUAR_AllocHWSurface;
+	device->AllocHWSurface = NULL;	//AJAGUAR_AllocHWSurface;
 	device->CheckHWBlit = NULL;
 	device->FillHWRect = NULL;
 	device->SetHWColorKey = NULL;
 	device->SetHWAlpha = NULL;
-	device->LockHWSurface = AJAGUAR_LockHWSurface;
-	device->UnlockHWSurface = AJAGUAR_UnlockHWSurface;
+	device->LockHWSurface = NULL;	//AJAGUAR_LockHWSurface;
+	device->UnlockHWSurface = NULL;	//AJAGUAR_UnlockHWSurface;
 	device->FlipHWSurface = NULL;
-	device->FreeHWSurface = AJAGUAR_FreeHWSurface;
+	device->FreeHWSurface = NULL;	//AJAGUAR_FreeHWSurface;
 	device->SetCaption = NULL;
 	device->SetIcon = NULL;
 	device->IconifyWindow = NULL;
@@ -145,6 +144,8 @@ int AJAGUAR_VideoInit(_THIS, SDL_PixelFormat *vformat)
 	fprintf(stderr, "WARNING: You are using the SDL JAGUAR video driver!\n");
 	*/
 
+	init_video();
+
 	/* Determine the screen depth (use default 8-bit depth) */
 	/* we change this during the SDL_SetVideoMode implementation... */
 	vformat->BitsPerPixel = 8;
@@ -154,23 +155,44 @@ int AJAGUAR_VideoInit(_THIS, SDL_PixelFormat *vformat)
 	return(0);
 }
 
+const static SDL_Rect
+	RECT_320x240 = {0,0,320,240};
+const static SDL_Rect *vid_modes[] = {
+	&RECT_320x240,
+	NULL
+};
+
 SDL_Rect **AJAGUAR_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags)
 {
+#if 0
    	 return (SDL_Rect **) -1;
+#else
+	switch(format->BitsPerPixel) {
+	case 8:
+		return &vid_modes;
+	default:
+		return NULL;
+	}
+#endif 
 }
 
 SDL_Surface *AJAGUAR_SetVideoMode(_THIS, SDL_Surface *current,
 				int width, int height, int bpp, Uint32 flags)
 {
+#if 1
 	if ( this->hidden->buffer ) {
 		SDL_free( this->hidden->buffer );
 	}
 
 	this->hidden->buffer = SDL_malloc(width * height * (bpp / 8));
+
 	if ( ! this->hidden->buffer ) {
 		SDL_SetError("Couldn't allocate buffer for requested mode");
 		return(NULL);
 	}
+#else
+	this->hidden->buffer = &ajag_screen;
+#endif
 
 /* 	printf("Setting mode %dx%d\n", width, height); */
 
@@ -178,7 +200,9 @@ SDL_Surface *AJAGUAR_SetVideoMode(_THIS, SDL_Surface *current,
 
 	/* Allocate the new pixel format for the screen */
 	if ( ! SDL_ReallocFormat(current, bpp, 0, 0, 0, 0) ) {
+#if 1
 		SDL_free(this->hidden->buffer);
+#endif
 		this->hidden->buffer = NULL;
 		SDL_SetError("Couldn't allocate new pixel format for requested mode");
 		return(NULL);
@@ -191,8 +215,7 @@ SDL_Surface *AJAGUAR_SetVideoMode(_THIS, SDL_Surface *current,
 	current->pitch = current->w * (bpp / 8);
 	current->pixels = this->hidden->buffer;
 
-	//
-	ajag_setvideo();
+	setvideo_320x240x8();
 
 	/* We're done */
 	return(current);
@@ -237,7 +260,9 @@ void AJAGUAR_VideoQuit(_THIS)
 {
 	if (this->screen->pixels != NULL)
 	{
+#if 1
 		SDL_free(this->screen->pixels);
+#endif
 		this->screen->pixels = NULL;
 	}
 }
