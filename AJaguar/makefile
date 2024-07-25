@@ -130,7 +130,7 @@ endif
 # Compiler GCC information
 ifeq ($(COMPILER_C_TYPE), gcc)
 CFLAGS = -c -m68000 -Wall -Wextra -MD -MP -D$(MODE) -D__AJAGUAR__
-CCINC = -IC:/Projects/Lib-M68K/include -I$(CCINC1) -I$(CCINC2)
+CCINC = -IC:/Projects/Lib-M68K/include -I$(CCINC1) -I$(CCINC2) -I$(RUNTIME_SRC)
 CCINC += -I$(INCLUDE) -I$(SRC)
 ifneq ($(OPENGL_SELECT), no)
 CFLAGS += -DSDL_VIDEO_OPENGL=1
@@ -168,7 +168,7 @@ endif
 # Assembler VASM information
 ifeq ($(ASM), vasm)
 ifeq ($(VASM_SUPPORT), madmac)
-AOPT = -m68000 -F$(FORMAT) -D$(MODE) -D$(ASM) -I$(AJAGUARSDK)
+AOPT = -quiet -m68000 -F$(FORMAT) -D$(MODE) -D$(ASM) -I$(AJAGUARSDK)
 else
 $(error $(ASM) must use the madmac format, please update the config.mk file in accordance)
 endif
@@ -180,7 +180,7 @@ endif
 
 
 # Library information
-AR_OPT = rvs
+AR_OPT = rcs
 ARAN_OPT =
 LIBMAINC = SDL_main-$(VERSION)_AJAG_$(mode)_$(COMPILER_SELECT).$(FORMAT).a
 ifneq ($(OPENGL_SELECT), no)
@@ -191,7 +191,7 @@ endif
 
 
 # Sources C dependence
-SRC_C_DEPS	=	makefile build.bat $(INCLUDE)\SDL_config.h
+SRC_C_DEPS	=	$(INCLUDE)\SDL_config.h
 
 
 ROOT_OBJS		=	$(ROOT_OBJC)/SDL.o \
@@ -332,9 +332,13 @@ VIDEO_OBJS_d	=	$(VIDEO_OBJC)/SDL_blit.d \
 					$(VIDEO_OBJC)/SDL_yuv.d \
 					$(VIDEO_OBJC)/SDL_yuv_sw.d
 #
-RUNTIME_OBJS	=	$(RUNTIME_OBJASM)/STARTUP.o
+RUNTIME_OBJS	=	$(RUNTIME_OBJASM)/IRQHandler.o \
+					$(RUNTIME_OBJASM)/joypad.o \
+					$(RUNTIME_OBJASM)/video_320x240x8.o
 #
-RUNTIME_OBJS_d	=	$(RUNTIME_OBJASM)/STARTUP.d
+RUNTIME_OBJS_d	=	$(RUNTIME_OBJASM)/IRQHandler.d \
+					$(RUNTIME_OBJASM)/joypad.d \
+					$(RUNTIME_OBJASM)/video_320x240x8.d
 
 
 # SDL library
@@ -793,8 +797,8 @@ compile_runtime:	$(RUNTIME_OBJS)
 #	$(CCProg) $(CFLAGS) $(CCINC) $(CCOBJ) $<
 #$(RUNTIME_OBJC)/cmdlib.o:	$(RUNTIME_SRC)/cmdlib.c $(SRC_C_DEPS)
 #	$(CCProg) $(CFLAGS) $(CCINC) $(CCOBJ) $<
-$(RUNTIME_OBJASM)/STARTUP.o:	$(RUNTIME_SRC)/STARTUP.s makefile Build.bat
-	@echo -e "\033[01;33m***\033[$(COLOR_ASSEMBLER)m Assembling $< for runtime...\033[00m"
+$(RUNTIME_OBJS):	$(RUNTIME_OBJASM)/%.o:	$(RUNTIME_SRC)/%.s
+	@echo -e "\033[01;33m***\033[$(COLOR_ASSEMBLER)m Assembling $< for Runtime...\033[00m"
 	$(Q)$(ASMProg) $(AOPT) -o $@ $<
 
 

@@ -217,7 +217,7 @@ endif
 endif
 # libc Standard C library selection
 ifeq ($(LIBC_SELECT), lib-m68k)
-LIBC = $(mode)/libs/libc-1.2d_$(mode)_gcc-M68K.elf.a
+LIBC = $(mode)/libs/libc-1.2e_$(mode)_gcc-M68K.elf.a
 else
 ifeq ($(LIBC_SELECT), lib-gcc)
 LIBC = $(DIRLIBC)/libc.a $(DIRLIBC)/libbcc.a
@@ -575,6 +575,7 @@ $(INCLUDE)\SDL_config.h:	$(INCLUDE)\SDL_config_ajaguar.h $(INCLUDE)\SDL_config.h
 
 makedirs:	mkdir_Runtime \
 			mkdir_objs \
+			mkdir_libs \
 			mkdir_CtoS
 #
 # Create the Runtime's object files directories
@@ -587,6 +588,13 @@ mkdir_Runtime:
 mkdir_CtoS:
 		@echo -e "\033[01;33m***\033[$(COLOR_MKDIR)m Creating the generated asm directories...\033[00m"
 		$(Q)mkdir -p $(CtoSDIR)
+#
+# Create the external libraries files directories
+mkdir_libs:
+		@echo -e "\033[01;33m***\033[$(COLOR_MKDIR)m Creating the libs directories...\033[00m"
+		$(Q)mkdir -p $(mode)/libs
+		$(Q)mkdir -p $(mode)/libs/fdlibm
+		$(Q)mkdir -p $(mode)/libs/OSJag
 #
 # Create the object files directories
 mkdir_objs:
