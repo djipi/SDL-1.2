@@ -1,9 +1,9 @@
-// testwin's arguments list
+// testvidinfo's arguments list
 
 
 // Arguments list
 char* NXArgv[] = {
-	(char*)"testwin.elf",
+	(char*)"testvidinfo.elf",
 	(char*)"-benchmark"
 };
 
