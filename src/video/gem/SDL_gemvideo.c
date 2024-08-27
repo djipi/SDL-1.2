@@ -35,9 +35,7 @@
 #include <mint/osbind.h>
 #include <mint/cookie.h>
 
-#include "SDL_endian.h"
 #include "SDL_video.h"
-#include "SDL_mouse.h"
 #include "../SDL_sysvideo.h"
 #include "../SDL_pixels_c.h"
 #include "../../events/SDL_events_c.h"
@@ -45,15 +43,16 @@
 
 #include "../ataricommon/SDL_ataric2p_s.h"
 #include "../ataricommon/SDL_atarieddi_s.h"
-#include "../ataricommon/SDL_atarimxalloc_c.h"
+#include "../ataricommon/SDL_atarievents_c.h"
 #include "../ataricommon/SDL_atarigl_c.h"
+#include "../ataricommon/SDL_atarimxalloc_c.h"
+#include "../ataricommon/SDL_geminit_c.h"
+#include "../ataricommon/SDL_xbiosevents_c.h"
 
-#include "SDL_gemvideo.h"
 #include "SDL_gemevents_c.h"
 #include "SDL_gemmouse_c.h"
+#include "SDL_gemvideo.h"
 #include "SDL_gemwm_c.h"
-#include "../ataricommon/SDL_atarievents_c.h"
-#include "../ataricommon/SDL_xbiosevents_c.h"
 
 /* Defines */
 
@@ -68,107 +67,12 @@
 
 /* Variables */
 
-static short internal_ap_id;
-
 static unsigned char vdi_index[256] = {
 	0,  2,  3,  6,  4,  7,  5,   8,
 	9, 10, 11, 14, 12, 15, 13, 255
 };
 
 static const char empty_name[]="";
-
-static OBJECT menu_obj[] = {
-	/*
-	 * next, head, tail, type,
-	 * flags,
-	 * state,
-	 * spec,
-	 * x, y, w,	h
-	 */
-	{-1, 1, 4, G_IBOX,				/*** 0 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) 0L},
-	0, 0, 80, 25},
-
-	{4, 2, 2, G_BOX,				/*** 1 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) 4352L},
-	0, 0, 80, 513},
-
-	{1, 3, 3, G_IBOX,				/*** 2 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) 0L},
-	2, 0, 10, 769},
-
-	{2, -1, -1, G_TITLE,			/*** 3 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) " SDL"},
-	0, 0, 10, 769},
-
-	{0, 5, 5, G_IBOX,				/*** 4 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) 0L},
-	0, 769, 23, 8},
-
-	{4, 6, 13, G_BOX,				/*** 5 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) 16716032L},
-	2, 0, 21, 8},
-
-	{7, -1, -1, G_STRING,			/*** 6 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) "  Empty..."},
-	0, 0, 21, 1},
-
-	{8, -1, -1, G_STRING,			/*** 7 ***/
-	OF_NONE,
-	OS_DISABLED,
-	{(long) "---------------------"},
-	0, 1, 21, 1},
-
-	{9, -1, -1, G_STRING,			/*** 8 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) "  Desk Accessory 1  "},
-	0, 2, 21, 1},
-
-	{10, -1, -1, G_STRING,			/*** 9 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) "  Desk Accessory 2"},
-	0, 3, 21, 1},
-
-	{11, -1, -1, G_STRING,			/*** 10 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) "  Desk Accessory 3"},
-	0, 4, 21, 1},
-
-	{12, -1, -1, G_STRING,			/*** 11 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) "  Desk Accessory 4"},
-	0, 5, 21, 1},
-
-	{13, -1, -1, G_STRING,			/*** 12 ***/
-	OF_NONE,
-	OS_NORMAL,
-	{(long) "  Desk Accessory 5"},
-	0, 6, 21, 1},
-
-	{5, -1, -1, G_STRING,			/*** 13 ***/
-	OF_LASTOB,
-	OS_NORMAL,
-	{(long) "  Desk Accessory 6"},
-	0, 7, 21, 1}
-};
 
 /* Initialization/Query functions */
 static int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat);
@@ -191,9 +95,7 @@ static void GEM_ClearScreen(_THIS);
 static void GEM_ClearRect(_THIS, short *pxy);
 static void GEM_ClearRectXYWH(_THIS, GRECT *rect);
 static void GEM_SetNewPalette(_THIS, Uint16 newpal[256][3]);
-static void GEM_LockScreen(_THIS);
-static void GEM_UnlockScreen(_THIS);
-static void refresh_window(_THIS, int winhandle, GRECT *rect);
+static void GEM_RefreshWindow(_THIS, int winhandle, GRECT *rect);
 
 #if SDL_VIDEO_OPENGL
 /* OpenGL functions */
@@ -205,11 +107,7 @@ static void GEM_GL_SwapBuffers(_THIS);
 static int GEM_Available(void)
 {
 	/* Test if AES available */
-	internal_ap_id = appl_init();
-	if (internal_ap_id == -1)
-		return 0;
-
-	return 1;
+	return GEM_CommonInit() != -1;
 }
 
 static void GEM_DeleteDevice(SDL_VideoDevice *device)
@@ -297,6 +195,56 @@ VideoBootStrap GEM_bootstrap = {
 	GEM_VID_DRIVER_NAME, "Atari GEM video driver",
 	GEM_Available, GEM_CreateDevice
 };
+
+void GEM_AlignWorkArea(_THIS, short windowid)
+{
+	wind_get_grect(windowid, WF_WORKXYWH, &GEM_work);
+	if (GEM_iconified) {
+		return;
+	}
+
+	/* Align work area on 16 pixels boundary (faster for bitplanes modes) */
+	if (GEM_align_windows) {
+		//wind_get_grect(windowid, WF_WORKXYWH, &GEM_work);
+
+		if (GEM_work.g_x & 15) {
+			GEM_work.g_x = (GEM_work.g_x|15)+1;
+			wind_set_grect(windowid, WF_WORKXYWH, &GEM_work);
+			wind_get_grect(windowid, WF_WORKXYWH, &GEM_work);
+		}
+	}
+}
+
+void GEM_RedrawWindow(_THIS, int winhandle, const GRECT *inside)
+{
+	GRECT todo;
+
+	/* Tell AES we are going to update */
+	wind_update(BEG_UPDATE);
+
+	v_hide_c(VDI_handle);
+
+	/* Browse the rectangle list to redraw */
+	if (wind_get_grect(winhandle, WF_FIRSTXYWH, &todo)!=0) {
+
+		while (todo.g_w && todo.g_h) {
+
+			if (rc_intersect(inside, &todo)) {
+				GEM_RefreshWindow(this, winhandle, &todo);
+			}
+
+			if (wind_get_grect(winhandle, WF_NEXTXYWH, &todo)==0) {
+				break;
+			}
+		}
+
+	}
+
+	/* Update finished */
+	wind_update(END_UPDATE);
+
+	v_show_c(VDI_handle,1);
+}
 
 static void VDI_ReadNOVAInfo(_THIS, short *work_out)
 {
@@ -420,7 +368,7 @@ static void VDI_ReadExtInfo(_THIS, short *work_out)
 	}
 }
 
-int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat)
+static int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat)
 {
 	int i;
 	short work_in[12];
@@ -432,7 +380,7 @@ int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat)
 	short dummy;
 
 	/* Open AES (Application Environment Services) */
-	GEM_ap_id = internal_ap_id;
+	GEM_ap_id = GEM_CommonInit();
 	if (GEM_ap_id == -1) {
 		fprintf(stderr,"Can not open AES\n");
 		return(-1);
@@ -536,7 +484,6 @@ int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat)
 	GEM_icon_name = empty_name;
 
 	GEM_handle = -1;
-	GEM_locked = SDL_FALSE;
 	GEM_win_fulled = SDL_FALSE;
 	GEM_iconified = SDL_FALSE;
 	GEM_fullscreen = SDL_FALSE;
@@ -585,12 +532,6 @@ int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat)
 	vsf_interior(VDI_handle,1);
 	vsf_perimeter(VDI_handle,0);
 
-	/* Menu bar */
-	for (i = 0; i < sizeof(menu_obj)/sizeof(menu_obj[0]); ++i) {
-		rsrc_obfix(menu_obj, i);
-	}
-	GEM_menubar = &menu_obj[ROOT];
-
 	/* Fill video modes list */
 	SDL_modelist[0] = SDL_malloc(sizeof(SDL_Rect));
 	SDL_modelist[0]->x = 0;
@@ -613,7 +554,7 @@ int GEM_VideoInit(_THIS, SDL_PixelFormat *vformat)
 	return(0);
 }
 
-SDL_Rect **GEM_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags)
+static SDL_Rect **GEM_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags)
 {
 	if (format->BitsPerPixel != VDI_bpp) {
 		return ((SDL_Rect **)NULL);
@@ -640,7 +581,7 @@ static void GEM_FreeBuffers(_THIS)
 	}
 }
 
-void GEM_ClearRect(_THIS, short *pxy)
+static void GEM_ClearRect(_THIS, short *pxy)
 {
 	short oldrgb[3], rgb[3]={0,0,0}, clip_pxy[4];
 
@@ -662,7 +603,7 @@ void GEM_ClearRect(_THIS, short *pxy)
 	vs_color(VDI_handle, 0, oldrgb);
 }
 
-void GEM_ClearRectXYWH(_THIS, GRECT *rect)
+static void GEM_ClearRectXYWH(_THIS, GRECT *rect)
 {
 	short pxy[4];
 
@@ -697,40 +638,8 @@ static void GEM_SetNewPalette(_THIS, Uint16 newpal[256][3])
 	}
 }
 
-static void GEM_LockScreen(_THIS)
-{
-	if (!GEM_locked) {
-		/* Install menu bar to keep the application in foreground */
-		menu_bar(GEM_menubar, MENU_INSTALL);
-
-		/* Lock AES */
-		wind_update(BEG_UPDATE);
-		wind_update(BEG_MCTRL);
-		/* Reserve memory space, used to be sure of compatibility */
-		form_dial( FMD_START, 0,0,0,0, 0,0,VDI_w,VDI_h);
-
-		GEM_locked=SDL_TRUE;
-	}
-}
-
-static void GEM_UnlockScreen(_THIS)
-{
-	if (GEM_locked) {
-		/* Restore screen memory, and send REDRAW to all apps */
-		form_dial( FMD_FINISH, 0,0,0,0, 0,0,VDI_w,VDI_h);
-		/* Unlock AES */
-		wind_update(END_MCTRL);
-		wind_update(END_UPDATE);
-
-		/* Restore desktop menu bar */
-		menu_bar(GEM_menubar, MENU_REMOVE);
-
-		GEM_locked=SDL_FALSE;
-	}
-}
-
-SDL_Surface *GEM_SetVideoMode(_THIS, SDL_Surface *current,
-				int width, int height, int bpp, Uint32 flags)
+static SDL_Surface *GEM_SetVideoMode(_THIS, SDL_Surface *current,
+	int width, int height, int bpp, Uint32 flags)
 {
 	Uint32 modeflags, screensize;
 	SDL_bool use_shadow1, use_shadow2;
@@ -816,7 +725,7 @@ SDL_Surface *GEM_SetVideoMode(_THIS, SDL_Surface *current,
 	}
 
 	if (flags & SDL_FULLSCREEN) {
-		GEM_LockScreen(this);
+		GEM_LockScreen(SDL_FALSE);
 
 		GEM_ClearScreen(this);
 
@@ -832,7 +741,7 @@ SDL_Surface *GEM_SetVideoMode(_THIS, SDL_Surface *current,
 		int old_win_type;
 		GRECT gr;
 
-		GEM_UnlockScreen(this);
+		GEM_UnlockScreen(SDL_FALSE);
 
 		/* Set window gadgets */
 		old_win_type = GEM_win_type;
@@ -915,7 +824,7 @@ SDL_Surface *GEM_SetVideoMode(_THIS, SDL_Surface *current,
 			}
 		}
 
-		GEM_align_work_area(this, GEM_handle);
+		GEM_AlignWorkArea(this, GEM_handle);
 		GEM_fullscreen = SDL_FALSE;
 	}
 
@@ -953,25 +862,6 @@ SDL_Surface *GEM_SetVideoMode(_THIS, SDL_Surface *current,
 
 	/* We're done */
 	return(current);
-}
-
-void GEM_align_work_area(_THIS, short windowid)
-{
-	wind_get_grect(windowid, WF_WORKXYWH, &GEM_work);
-	if (GEM_iconified) {
-		return;
-	}
-
-	/* Align work area on 16 pixels boundary (faster for bitplanes modes) */
-	if (GEM_align_windows) {
-		//wind_get_grect(windowid, WF_WORKXYWH, &GEM_work);
-
-		if (GEM_work.g_x & 15) {
-			GEM_work.g_x = (GEM_work.g_x|15)+1;
-			wind_set_grect(windowid, WF_WORKXYWH, &GEM_work);
-			wind_get_grect(windowid, WF_WORKXYWH, &GEM_work);
-		}
-	}
 }
 
 static int GEM_AllocHWSurface(_THIS, SDL_Surface *surface)
@@ -1084,7 +974,7 @@ static void GEM_UpdateRectsWindowed(_THIS, int numrects, SDL_Rect *rects)
 		rect.g_w = rects[i].w;
 		rect.g_h = rects[i].h;
 
-		GEM_wind_redraw(this, GEM_handle, &rect);
+		GEM_RedrawWindow(this, GEM_handle, &rect);
 	}
 }
 
@@ -1167,7 +1057,7 @@ static int GEM_FlipHWSurfaceFullscreen(_THIS, SDL_Surface *surface)
 static int GEM_FlipHWSurfaceWindowed(_THIS, SDL_Surface *surface)
 {
 	/* Update the whole window */
-	GEM_wind_redraw(this, GEM_handle, &GEM_work);
+	GEM_RedrawWindow(this, GEM_handle, &GEM_work);
 
 	return(0);
 }
@@ -1222,7 +1112,7 @@ static int GEM_SetColors(_THIS, int firstcolor, int ncolors, SDL_Color *colors)
 /* Note:  If we are terminated, this could be called in the middle of
    another SDL video routine -- notably UpdateRects.
 */
-void GEM_VideoQuit(_THIS)
+static void GEM_VideoQuit(_THIS)
 {
 	/* Restore CON: */
 	SDL_Atari_RestoreConsoleSettings();
@@ -1250,9 +1140,7 @@ void GEM_VideoQuit(_THIS)
 		GEM_handle=-1;
 	}
 
-	GEM_UnlockScreen(this);
-
-	appl_exit();
+	GEM_CommonQuit(SDL_FALSE);
 
 	GEM_SetNewPalette(this, VDI_oldpalette);
 
@@ -1270,38 +1158,7 @@ void GEM_VideoQuit(_THIS)
 	this->screen->pixels = NULL;
 }
 
-void GEM_wind_redraw(_THIS, int winhandle, const GRECT *inside)
-{
-	GRECT todo;
-
-	/* Tell AES we are going to update */
-	wind_update(BEG_UPDATE);
-
-	v_hide_c(VDI_handle);
-
-	/* Browse the rectangle list to redraw */
-	if (wind_get_grect(winhandle, WF_FIRSTXYWH, &todo)!=0) {
-
-		while (todo.g_w && todo.g_h) {
-
-			if (rc_intersect(inside, &todo)) {
-				refresh_window(this, winhandle, &todo);
-			}
-
-			if (wind_get_grect(winhandle, WF_NEXTXYWH, &todo)==0) {
-				break;
-			}
-		}
-
-	}
-
-	/* Update finished */
-	wind_update(END_UPDATE);
-
-	v_show_c(VDI_handle,1);
-}
-
-static void refresh_window(_THIS, int winhandle, GRECT *rect)
+static void GEM_RefreshWindow(_THIS, int winhandle, GRECT *rect)
 {
 	MFDB mfdb_src;
 	short pxy[8];
