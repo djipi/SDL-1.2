@@ -19,31 +19,27 @@
     Sam Lantinga
     slouken@libsdl.org
 */
+#include "SDL_config.h"
 
-#ifndef _SDL_config_h
-#define _SDL_config_h
+/* Being a null driver, there's no event stream. We just define stubs for
+   most of the API. */
 
-#include "SDL_platform.h"
+#include "SDL.h"
+#include "../../events/SDL_sysevents.h"
+#include "../../events/SDL_events_c.h"
 
-/* Add any platform that doesn't build using the configure system */
-#if defined(__DREAMCAST__)
-#include "SDL_config_dreamcast.h"
-#elif defined(__AJAGUAR__)
-#include "SDL_config_ajaguar.h"
-#elif defined(__3DO__)
-#include "SDL_config_3DO.h"
-#elif defined(__MACOS__)
-#include "SDL_config_macos.h"
-#elif defined(__MACOSX__)
-#include "SDL_config_macosx.h"
-#elif defined(__SYMBIAN32__)
-#include "SDL_config_symbian.h"  /* must be before win32! */
-#elif defined(__WIN32__)
-#include "SDL_config_win32.h"
-#elif defined(__OS2__)
-#include "SDL_config_os2.h"
-#else
-#include "SDL_config_minimal.h"
-#endif /* platform config */
+#include "SDL_3DOvideo.h"
+#include "SDL_3DOevents_c.h"
 
-#endif /* _SDL_config_h */
+void _3DO_PumpEvents(_THIS)
+{
+	/* do nothing. */
+}
+
+void _3DO_InitOSKeymap(_THIS)
+{
+	/* do nothing. */
+}
+
+/* end of SDL_3DOevents.c ... */
+

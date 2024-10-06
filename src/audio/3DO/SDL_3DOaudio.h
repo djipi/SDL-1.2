@@ -19,31 +19,22 @@
     Sam Lantinga
     slouken@libsdl.org
 */
+#include "SDL_config.h"
 
-#ifndef _SDL_config_h
-#define _SDL_config_h
+#ifndef _SDL_3DOaudio_h
+#define _SDL_3DOaudio_h
 
-#include "SDL_platform.h"
+#include "../SDL_sysaudio.h"
 
-/* Add any platform that doesn't build using the configure system */
-#if defined(__DREAMCAST__)
-#include "SDL_config_dreamcast.h"
-#elif defined(__AJAGUAR__)
-#include "SDL_config_ajaguar.h"
-#elif defined(__3DO__)
-#include "SDL_config_3DO.h"
-#elif defined(__MACOS__)
-#include "SDL_config_macos.h"
-#elif defined(__MACOSX__)
-#include "SDL_config_macosx.h"
-#elif defined(__SYMBIAN32__)
-#include "SDL_config_symbian.h"  /* must be before win32! */
-#elif defined(__WIN32__)
-#include "SDL_config_win32.h"
-#elif defined(__OS2__)
-#include "SDL_config_os2.h"
-#else
-#include "SDL_config_minimal.h"
-#endif /* platform config */
+/* Hidden "this" pointer for the video functions */
+#define _THIS	SDL_AudioDevice *this
 
-#endif /* _SDL_config_h */
+struct SDL_PrivateAudioData {
+	/* The file descriptor for the audio device */
+	Uint8 *mixbuf;
+	Uint32 mixlen;
+	Uint32 write_delay;
+	Uint32 initial_calls;
+};
+
+#endif /* _SDL_3DOaudio_h */

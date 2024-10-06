@@ -421,6 +421,9 @@ extern VideoBootStrap DUMMY_bootstrap;
 #if SDL_VIDEO_DRIVER_AJAGUAR
 extern VideoBootStrap AJAGUAR_bootstrap;
 #endif
+#if SDL_VIDEO_DRIVER_3DO
+extern VideoBootStrap _3DO_bootstrap;
+#endif
 
 /* This is the current video device */
 extern SDL_VideoDevice *current_video;

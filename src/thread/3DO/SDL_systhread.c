@@ -19,31 +19,36 @@
     Sam Lantinga
     slouken@libsdl.org
 */
+#include "SDL_config.h"
 
-#ifndef _SDL_config_h
-#define _SDL_config_h
+/* Thread management routines for SDL */
 
-#include "SDL_platform.h"
+#include "SDL_thread.h"
+#include "../SDL_systhread.h"
 
-/* Add any platform that doesn't build using the configure system */
-#if defined(__DREAMCAST__)
-#include "SDL_config_dreamcast.h"
-#elif defined(__AJAGUAR__)
-#include "SDL_config_ajaguar.h"
-#elif defined(__3DO__)
-#include "SDL_config_3DO.h"
-#elif defined(__MACOS__)
-#include "SDL_config_macos.h"
-#elif defined(__MACOSX__)
-#include "SDL_config_macosx.h"
-#elif defined(__SYMBIAN32__)
-#include "SDL_config_symbian.h"  /* must be before win32! */
-#elif defined(__WIN32__)
-#include "SDL_config_win32.h"
-#elif defined(__OS2__)
-#include "SDL_config_os2.h"
-#else
-#include "SDL_config_minimal.h"
-#endif /* platform config */
+int SDL_SYS_CreateThread(SDL_Thread *thread, void *args)
+{
+	SDL_SetError("Threads are not supported on this platform");
+	return(-1);
+}
 
-#endif /* _SDL_config_h */
+void SDL_SYS_SetupThread(void)
+{
+	return;
+}
+
+Uint32 SDL_ThreadID(void)
+{
+	return(0);
+}
+
+void SDL_SYS_WaitThread(SDL_Thread *thread)
+{
+	return;
+}
+
+void SDL_SYS_KillThread(SDL_Thread *thread)
+{
+	return;
+}
+

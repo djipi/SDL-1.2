@@ -30,6 +30,8 @@
 #include "SDL_config_dreamcast.h"
 #elif defined(__AJAGUAR__)
 #include "SDL_config_ajaguar.h"
+#elif defined(__3DO__)
+#include "SDL_config_3DO.h"
 #elif defined(__MACOS__)
 #include "SDL_config_macos.h"
 #elif defined(__MACOSX__)

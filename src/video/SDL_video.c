@@ -137,6 +137,9 @@ static VideoBootStrap *bootstrap[] = {
 #if SDL_VIDEO_DRIVER_AJAGUAR
 	&AJAGUAR_bootstrap,
 #endif
+#if SDL_VIDEO_DRIVER_3DO
+	&_3DO_bootstrap,
+#endif
 	NULL
 };
 

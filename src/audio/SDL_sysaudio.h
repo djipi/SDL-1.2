@@ -170,6 +170,9 @@ extern AudioBootStrap DUMMYAUD_bootstrap;
 #if SDL_AUDIO_DRIVER_AJAGUAR
 extern AudioBootStrap AJAGUARAUD_bootstrap;
 #endif
+#if SDL_AUDIO_DRIVER_3DO
+extern AudioBootStrap _3DOAUD_bootstrap;
+#endif
 #if SDL_AUDIO_DRIVER_DC
 extern AudioBootStrap DCAUD_bootstrap;
 #endif

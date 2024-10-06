@@ -19,31 +19,32 @@
     Sam Lantinga
     slouken@libsdl.org
 */
+#include "SDL_config.h"
 
-#ifndef _SDL_config_h
-#define _SDL_config_h
+#if defined(SDL_LOADSO_3DO) || defined(SDL_LOADSO_DISABLED)
 
-#include "SDL_platform.h"
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* System dependent library loading routines                           */
 
-/* Add any platform that doesn't build using the configure system */
-#if defined(__DREAMCAST__)
-#include "SDL_config_dreamcast.h"
-#elif defined(__AJAGUAR__)
-#include "SDL_config_ajaguar.h"
-#elif defined(__3DO__)
-#include "SDL_config_3DO.h"
-#elif defined(__MACOS__)
-#include "SDL_config_macos.h"
-#elif defined(__MACOSX__)
-#include "SDL_config_macosx.h"
-#elif defined(__SYMBIAN32__)
-#include "SDL_config_symbian.h"  /* must be before win32! */
-#elif defined(__WIN32__)
-#include "SDL_config_win32.h"
-#elif defined(__OS2__)
-#include "SDL_config_os2.h"
-#else
-#include "SDL_config_minimal.h"
-#endif /* platform config */
+#include "SDL_loadso.h"
 
-#endif /* _SDL_config_h */
+void *SDL_LoadObject(const char *sofile)
+{
+	const char *loaderror = "SDL_LoadObject() not implemented";
+	SDL_SetError("Failed loading %s: %s", sofile, loaderror);
+	return(NULL);
+}
+
+void *SDL_LoadFunction(void *handle, const char *name)
+{
+	const char *loaderror = "SDL_LoadFunction() not implemented";
+	SDL_SetError("Failed loading %s: %s", name, loaderror);
+	return(NULL);
+}
+
+void SDL_UnloadObject(void *handle)
+{
+    /* no-op. */
+}
+
+#endif /* SDL_LOADSO_3DO || SDL_LOADSO_DISABLED */

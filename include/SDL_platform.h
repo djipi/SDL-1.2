@@ -27,6 +27,10 @@
 #ifndef _SDL_platform_h
 #define _SDL_platform_h
 
+#if defined(__3DO__)
+#undef __3DO__
+#define __3DO__ 1
+#endif
 #if defined(__AJAGUAR__) || defined(__JAGUAR__)
 #undef __AJAGUAR__
 #define __AJAGUAR__ 1

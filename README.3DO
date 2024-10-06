@@ -1,0 +1,24 @@
+The SDL port to the 3DO
+
+todo:
+add console specific features and optimizations
+gamepad support
+mouse/keyboard emulation support
+audio support
+CD support
+
+to check:
+SDL_main support
+
+to build the SDL and SDL_main libraries with Makefile.3DO:
+make -f Makefile.3DO
+make -f Makefile.3DO SDL_main
+
+to build the tests with Makefile.3DO
+make -f Makefile.3DO test
+
+using the libraries, and the tests, require additional works specific to the platform
+
+Improvements and fixes are welcome.
+Jean-Paul Mari
+djipi.mari@gmail.com
